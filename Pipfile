@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 pandas = "*"
 transitions = "*"
+py2puml = "*"
 
 [dev-packages]
 
