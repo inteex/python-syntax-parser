@@ -1,18 +1,24 @@
-from metaModel.Operation import Operation
+from metaModel.oparation.Operation import Operation
+from metaModel.Sequence import Sequence
 
 default_file = "seq.txt"
 
 
-def write(operations: list[Operation], path: str = default_file):
+def write(sequences: list[Sequence], path: str = default_file):
     f = open(path, "w")
-    classesTxt = operation2pumlClass(operations)
-    togetherText = together(operations)
-    tuples2 = [(operations[i].name, operations[i + 1].name) for i in range(len(operations) - 1)]
+    f.write("@startuml\n\n")
+    for sequence in sequences:
+        classesTxt = operation2pumlClass(sequence.operations)
+        togetherText = together(sequence.operations)
+        tuples2 = [(sequence.operations[i].name, sequence.operations[i + 1].name) for i in
+                   range(len(sequence.operations) - 1)]
 
-    f.write("@startuml\n\n{}{}".format(classesTxt, togetherText))
-    for tuple2 in tuples2:
-        txt = "{} --> {}\n".format(tuple2[0], tuple2[1])
-        f.write(txt)
+        f.write("package " + str(sequence.sequenceId)+" {\n")
+        f.write("{}{}".format(classesTxt, togetherText))
+        for tuple2 in tuples2:
+            txt = "{} --> {}\n".format(tuple2[0], tuple2[1])
+            f.write(txt)
+        f.write("\n}\n")
     f.write("\n@enduml")
 
 
@@ -29,8 +35,17 @@ def operation2pumlClass(operations: list[Operation]):
         txt += "class " + str(operation.name) + "{\n" + operation2properties(operation) + "}\n"
     return txt
 
+
 def operation2properties(operation: Operation):
     txt = ""
     for p, value in vars(operation).items():
-        txt += "    {} {}\n".format(p, value)
+        if not p == "name":
+            txt += "    {} {}\n".format(p, value)
     return txt
+
+
+def package(operations: list[Operation]):
+    txt = ""
+    for operation in operations:
+        txt += "    class {}\n".format(operation.name)
+    return "package {\n" + str(txt) + "}\n\n"

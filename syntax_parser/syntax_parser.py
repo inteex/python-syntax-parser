@@ -1,7 +1,7 @@
 from transitions import Machine
 from .utils.TokenHelper import isDot, isName, isRightParenthesis, isLeftParenthesis
 from metaModel.Sequence import Sequence
-from metaModel.Operation import Operation
+from metaModel.oparation.Factory import creatInstance
 
 class Interpreter(object):
     """
@@ -38,7 +38,21 @@ machine = Machine(interpreter, states=states, transitions=transitions, initial='
 
 candidateFunctionName = ""
 functions_stack = []
-sequence1 = Sequence()
+sequences: list[Sequence] = [Sequence()]
+
+
+def handleAddOperationToSequence():
+    if len(sequences[-1].operations):
+        if sequences[-1].operations[-1].__class__.__name__ == "SchemaOperation"\
+                and not functions_stack[-1] == "SchemaOperation":
+            sequences.append(Sequence())
+            sequences[-1].addOperation(functions_stack.pop())
+
+        else:
+            sequences[-1].addOperation(functions_stack.pop())
+    else:
+        sequences[-1].addOperation(functions_stack.pop())
+
 
 def name(token):
     if isName(token):
@@ -48,10 +62,13 @@ def name(token):
     if isDot(token):
         interpreter.dot()
     elif isLeftParenthesis(token):
-        functions_stack.append(Operation(candidateFunctionName, "desc"))
+        functions_stack.append(creatInstance(candidateFunctionName, "desc"))
         interpreter.leftParenthesis()
     elif isRightParenthesis(token):
-        sequence1.addOperation(functions_stack.pop())
+        if functions_stack[-1] is None:
+            functions_stack.pop()
+        else:
+            handleAddOperationToSequence()
 
 
 def nameDot(token):
@@ -62,7 +79,7 @@ def nameDot(token):
 
 def leftParenthesisState(token):
     if isRightParenthesis(token):
-        sequence1.addOperation(functions_stack.pop())
+        handleAddOperationToSequence()
     # switch state to name
     interpreter.name()
 
@@ -81,7 +98,8 @@ def parse_function_name(tokens):
             switcher.get(interpreter.state, "this state does note exist")(token)
         except StopIteration:
             break
-    return sequence1
+    print(sequences)
+    return sequences
 
 
 def parser(tokens):
