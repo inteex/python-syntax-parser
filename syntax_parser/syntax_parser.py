@@ -1,7 +1,7 @@
 from transitions import Machine
-from .functionsStack import FunctionsStack
 from .utils.TokenHelper import isDot, isName, isRightParenthesis, isLeftParenthesis
-
+from metaModel.Sequence import Sequence
+from metaModel.Operation import Operation
 
 class Interpreter(object):
     """
@@ -38,7 +38,7 @@ machine = Machine(interpreter, states=states, transitions=transitions, initial='
 
 candidateFunctionName = ""
 functions_stack = []
-
+sequence1 = Sequence()
 
 def name(token):
     if isName(token):
@@ -48,10 +48,10 @@ def name(token):
     if isDot(token):
         interpreter.dot()
     elif isLeftParenthesis(token):
-        functions_stack.append(candidateFunctionName)
+        functions_stack.append(Operation(candidateFunctionName, "desc"))
         interpreter.leftParenthesis()
     elif isRightParenthesis(token):
-        FunctionsStack.addFunction(functions_stack.pop())
+        sequence1.addOperation(functions_stack.pop())
 
 
 def nameDot(token):
@@ -62,7 +62,7 @@ def nameDot(token):
 
 def leftParenthesisState(token):
     if isRightParenthesis(token):
-        FunctionsStack.addFunction(functions_stack.pop())
+        sequence1.addOperation(functions_stack.pop())
     # switch state to name
     interpreter.name()
 
@@ -81,8 +81,8 @@ def parse_function_name(tokens):
             switcher.get(interpreter.state, "this state does note exist")(token)
         except StopIteration:
             break
-    return FunctionsStack.functions
+    return sequence1
 
 
 def parser(tokens):
-    print((parse_function_name(tokens)))
+    print(parse_function_name(tokens))

@@ -12,8 +12,7 @@ loader = SpinningLoader()
 with tokenize.open('./samples/sample2.py') as f:
     tokens = tokenize.generate_tokens(f.readline)
     fns = parse_function_name(tokens)
-
-    write(functions=fns, path="{}/seq.txt".format(BUILD_DIRECTORY))
+    write(operations=fns.operations, path="{}/seq.txt".format(BUILD_DIRECTORY))
     loader.text = "generating class diagram ..."
     loader.start()
     # show loader because it takes some time
