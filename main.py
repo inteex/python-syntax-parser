@@ -1,5 +1,5 @@
 import tokenize
-from syntax_parser import parse_function_name
+from syntax_parser import parse
 from puml.PumlWriter import write
 import subprocess
 from loaders import SpinningLoader
@@ -11,8 +11,8 @@ Path(BUILD_DIRECTORY).mkdir(parents=True, exist_ok=True)
 loader = SpinningLoader()
 with tokenize.open('./samples/sample2.py') as f:
     tokens = tokenize.generate_tokens(f.readline)
-    fns = parse_function_name(tokens)
-    write(sequences=fns, path="{}/seq.txt".format(BUILD_DIRECTORY))
+    sequences = parse(tokens)
+    write(sequences, path="{}/seq.txt".format(BUILD_DIRECTORY))
     loader.text = "generating class diagram ..."
     loader.start()
     # show loader because it takes some time

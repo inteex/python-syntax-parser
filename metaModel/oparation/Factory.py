@@ -3,12 +3,13 @@ from .SchemaOperation import SchemaOperation
 from .RowOperation import RowOperation
 
 
-def creatInstance(name: str, desc: str):
+def creatInstance(name: str, params: str):
+    schemaOperation = ["project", "dropna"]
     if name == "sort_values":
-        return RowOperation(name, desc)
+        return RowOperation("sort: RowOperation", params)
     elif name == "apply":
-        return ValueOperation(name, desc)
-    elif name == "dropna":
-        return SchemaOperation(name, desc)
+        return ValueOperation("format: ValueOperation", params)
+    elif schemaOperation.__contains__(name):
+        return SchemaOperation(name + ": SchemaOperation", params)
     else:
         return None

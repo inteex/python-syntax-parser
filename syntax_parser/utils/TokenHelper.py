@@ -23,3 +23,15 @@ def isLeftParenthesis(token):
 
 def isRightParenthesis(token):
     return TokenTypes.OP.value == token.type and token.string == ')'
+
+
+def isOpenBracket(token):
+    return TokenTypes.OP.value == token.type and token.string == '['
+
+
+def isClosingBracket(token):
+    return TokenTypes.OP.value == token.type and token.string == ']'
+
+
+def isString(token):
+    return TokenTypes.STRING.value == token.type
