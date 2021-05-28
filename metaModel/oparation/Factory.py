@@ -5,8 +5,9 @@ from .RowOperation import RowOperation
 
 def creatInstance(name: str, params: str):
     schemaOperation = ["project", "dropna"]
-    if name == "sort_values":
-        return RowOperation("sort: RowOperation", params)
+    rowOperation = ["sort_values", "filter"]
+    if rowOperation.__contains__(name):
+        return RowOperation(name + ": RowOperation", params)
     elif name == "apply":
         return ValueOperation("format: ValueOperation", params)
     elif schemaOperation.__contains__(name):

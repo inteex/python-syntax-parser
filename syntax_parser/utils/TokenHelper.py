@@ -35,3 +35,7 @@ def isClosingBracket(token):
 
 def isString(token):
     return TokenTypes.STRING.value == token.type
+
+
+def isOperator(token):
+    return TokenTypes.OP.value == token.type

@@ -2,7 +2,8 @@ from transitions import Machine
 
 from metaModel.Sequence import Sequence
 from metaModel.oparation.Factory import creatInstance
-from .utils.TokenHelper import isDot, isName, isRightParenthesis, isLeftParenthesis, isOpenBracket, isClosingBracket, isString
+from .utils.TokenHelper import isDot, isName, isRightParenthesis, isLeftParenthesis, isOpenBracket, isClosingBracket, \
+    isString, isOperator
 
 
 class Interpreter(object):
@@ -31,11 +32,14 @@ candidateFunctionName = ""
 functions_stack = []
 projectionParams = []
 sequences: list[Sequence] = [Sequence()]
+filterColumn = ""
+filterOp = ""
+filterValue = ""
 
 
 def handleAddOperationToSequence():
     if len(sequences[-1].operations):
-        if sequences[-1].operations[-1].__class__.__name__ == "SchemaOperation"\
+        if sequences[-1].operations[-1].__class__.__name__ == "SchemaOperation" \
                 and not functions_stack[-1].__class__.__name__ == "SchemaOperation":
             sequences.append(Sequence())
             sequences[-1].addOperation(functions_stack.pop())
@@ -82,7 +86,11 @@ def case_3(token):
     if isOpenBracket(token):
         machine.set_state('case_4')
     elif isName(token):
+        functions_stack.append(creatInstance("filter", "a == b"))
+        handleAddOperationToSequence()
         machine.set_state("case_6")
+    elif isString(token):
+        machine.set_state("case_11")
 
 
 def case_4(token):
@@ -109,30 +117,51 @@ def case_6(token):
 
 def case_7(token):
     if isString(token):
+        global filterColumn
+        filterColumn = token.string
         machine.set_state('case_8')
+
 
 def case_8(token):
     if isClosingBracket(token):
         machine.set_state('case_9')
+    else:
+        print("error case_8", token.string)
+
 
 def case_9(token):
-    if token == '==':
-        machine.set_state('case10')
+    if isOperator(token):
+        global filterOp
+        filterOp = token.string
+        machine.set_state('case_10')
+
 
 def case_10(token):
-    machine.set_state('case_11')
+    global filterValue, filterColumn, filterOp
+    if isClosingBracket(token):
+        print(filterColumn, filterOp, filterValue)
+        filterColumn = ""
+        filterOp = ""
+        filterValue = ""
+        machine.set_state('case_1')
+    else:
+        filterValue += " " + str(token.string)
+
 
 def case_11(token):
     if isClosingBracket(token):
-        machine.set_state('case_1')
+        machine.set_state("case_1")
     else:
-        print("error")
+        print("error case_11", token.string)
+
 
 def case_12(token):
     pass
 
+
 def case_13(token):
     pass
+
 
 def case_14(token):
     pass
@@ -142,7 +171,7 @@ switcher = {
     "case_0": case_0,
     "case_1": case_1,
     "case_2": case_2,
-    "case_3":  case_3,
+    "case_3": case_3,
     "case_4": case_4,
     "case_5": case_5,
     "case_6": case_6,
@@ -165,5 +194,5 @@ def parse(tokens):
                          "this state does note exist")(token)
         except StopIteration:
             break
-    # print(sequences)
+    print(sequences)
     return sequences
