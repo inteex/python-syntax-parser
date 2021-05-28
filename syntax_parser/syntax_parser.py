@@ -10,6 +10,7 @@ class Interpreter(object):
     this is just a skeleton the class will be dynamically filled
     by Machine constructor (interface like)
     """
+
     def __init__(self):
         self.state = None
 
@@ -17,19 +18,14 @@ class Interpreter(object):
 interpreter = Interpreter()
 
 # The states
-states = ['name', 'nameDot', 'leftParenthesisState', 'nameOpenBracket', 'nameOBOB']  # ,  'rightParenthesisState']
+states = ['case_0', 'case_1', 'case_2', 'case_3', 'case_4', 'case_5', 'case_6',
+          'case_7', 'case_8', 'case_9', 'case_10', 'case_11', 'case_12', 'case_13', 'case_14']
 
 # trigger, current State => next State
-transitions = [
-    ['name', 'nameDot', 'name'],
-    ['name', 'leftParenthesisState', 'name'],
-    ['dot', 'name', 'nameDot'],
-    ['leftParenthesis', 'name', 'leftParenthesisState'],
-    ['openBracket', 'name', 'nameOpenBracket'],
-    ['openBracket', 'nameOpenBracket', 'nameOBOB'],
-]
+transitions = []
 # filling interpreter instance with state and transitions
-machine = Machine(interpreter, states=states, transitions=transitions, initial='name')
+machine = Machine(interpreter, states=states,
+                  transitions=transitions, initial='case_0')
 
 candidateFunctionName = ""
 functions_stack = []
@@ -50,64 +46,114 @@ def handleAddOperationToSequence():
         sequences[-1].addOperation(functions_stack.pop())
 
 
-def name(token):
+def case_0(token):
     if isName(token):
         global candidateFunctionName
         candidateFunctionName = token.string
-
-    if isDot(token):
-        interpreter.dot()
+    elif isDot(token):
+        machine.set_state('case_1')
     elif isLeftParenthesis(token):
         functions_stack.append(creatInstance(candidateFunctionName, "desc"))
-        interpreter.leftParenthesis()
+        machine.set_state('case_2')
     elif isRightParenthesis(token):
         if functions_stack[-1] is None:
             functions_stack.pop()
         else:
             handleAddOperationToSequence()
     elif isOpenBracket(token):
-        interpreter.openBracket()
+        machine.set_state('case_3')
 
 
-def nameDot(token):
-    if isName(token):
-        switcher.get("name")(token)
-        interpreter.name()
+def case_1(token):
+    machine.set_state('case_0')
+    switcher.get(interpreter.state)(token)
 
 
-def leftParenthesisState(token):
+def case_2(token):
     if isRightParenthesis(token):
         if functions_stack[-1] is None:
             functions_stack.pop()
         else:
             handleAddOperationToSequence()
-    # switch state to name
-    machine.set_state("name")
+    machine.set_state("case_0")
 
 
-def nameOpenBracket(token):
+def case_3(token):
     if isOpenBracket(token):
-        interpreter.openBracket()
-    else:
-        machine.set_state("name")
+        machine.set_state('case_4')
+    elif isName(token):
+        machine.set_state("case_6")
 
 
-def nameOBOB(token):
+def case_4(token):
     if isClosingBracket(token):
         if len(projectionParams):
             functions_stack.append(creatInstance("project", projectionParams))
             handleAddOperationToSequence()
-        machine.set_state("name")
+        machine.set_state("case_5")
     elif isString(token):
         projectionParams.append(token.string)
 
 
+def case_5(token):
+    if isClosingBracket(token):
+        machine.set_state('case_1')
+    else:
+        print("error, case_5 can't have token: ", token.string)
+
+
+def case_6(token):
+    if isOpenBracket(token):
+        machine.set_state('case_7')
+
+
+def case_7(token):
+    if isString(token):
+        machine.set_state('case_8')
+
+def case_8(token):
+    if isClosingBracket(token):
+        machine.set_state('case_9')
+
+def case_9(token):
+    if token == '==':
+        machine.set_state('case10')
+
+def case_10(token):
+    machine.set_state('case_11')
+
+def case_11(token):
+    if isClosingBracket(token):
+        machine.set_state('case_1')
+    else:
+        print("error")
+
+def case_12(token):
+    pass
+
+def case_13(token):
+    pass
+
+def case_14(token):
+    pass
+
+
 switcher = {
-    "name": name,
-    "nameDot": nameDot,
-    "leftParenthesisState": leftParenthesisState,
-    "nameOpenBracket":  nameOpenBracket,
-    "nameOBOB": nameOBOB
+    "case_0": case_0,
+    "case_1": case_1,
+    "case_2": case_2,
+    "case_3":  case_3,
+    "case_4": case_4,
+    "case_5": case_5,
+    "case_6": case_6,
+    "case_7": case_7,
+    "case_8": case_8,
+    "case_9": case_9,
+    "case_10": case_10,
+    "case_11": case_11,
+    "case_12": case_12,
+    "case_13": case_13,
+    "case_14": case_14,
 }
 
 
@@ -115,7 +161,8 @@ def parse(tokens):
     while True:
         try:
             token = tokens.__next__()
-            switcher.get(interpreter.state, "this state does note exist")(token)
+            switcher.get(interpreter.state,
+                         "this state does note exist")(token)
         except StopIteration:
             break
     # print(sequences)
