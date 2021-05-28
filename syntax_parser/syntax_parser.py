@@ -1,6 +1,7 @@
 from transitions import Machine
 
 from metaModel.Sequence import Sequence
+from metaModel.oparation.Operation import Operation
 from metaModel.oparation.Factory import creatInstance
 from .utils.TokenHelper import isDot, isName, isRightParenthesis, isLeftParenthesis, isOpenBracket, isClosingBracket, \
     isString, isOperator
@@ -29,7 +30,8 @@ machine = Machine(interpreter, states=states,
                   transitions=transitions, initial='case_0')
 
 candidateFunctionName = ""
-functions_stack = []
+functions_stack: list[Operation] = []
+functionParamsStack = []
 projectionParams = []
 sequences: list[Sequence] = [Sequence()]
 filterColumn = ""
@@ -38,19 +40,25 @@ filterValue = ""
 
 
 def handleAddOperationToSequence():
+    params = functionParamsStack.pop()
+    function = functions_stack.pop()
+    function.params = params
     if len(sequences[-1].operations):
         if sequences[-1].operations[-1].__class__.__name__ == "SchemaOperation" \
-                and not functions_stack[-1].__class__.__name__ == "SchemaOperation":
+                and not function.__class__.__name__ == "SchemaOperation":
             sequences.append(Sequence())
-            sequences[-1].addOperation(functions_stack.pop())
-
+            sequences[-1].addOperation(function)
         else:
-            sequences[-1].addOperation(functions_stack.pop())
-    else:
-        sequences[-1].addOperation(functions_stack.pop())
+            sequences[-1].addOperation(function)
 
+    else:
+        sequences[-1].addOperation(function)
 
 def case_0(token):
+    global functionParamsStack
+    if len(functions_stack):
+        if not isLeftParenthesis(token):
+            functionParamsStack[-1] += str(token.string)
     if isName(token):
         global candidateFunctionName
         candidateFunctionName = token.string
@@ -58,10 +66,13 @@ def case_0(token):
         machine.set_state('case_1')
     elif isLeftParenthesis(token):
         functions_stack.append(creatInstance(candidateFunctionName, "desc"))
-        machine.set_state('case_2')
+        functionParamsStack.append(token.string)
     elif isRightParenthesis(token):
         if functions_stack[-1] is None:
             functions_stack.pop()
+            param = functionParamsStack.pop()
+            if len(functionParamsStack):
+                functionParamsStack[-1] += str(param)
         else:
             handleAddOperationToSequence()
     elif isOpenBracket(token):
@@ -74,20 +85,14 @@ def case_1(token):
 
 
 def case_2(token):
-    if isRightParenthesis(token):
-        if functions_stack[-1] is None:
-            functions_stack.pop()
-        else:
-            handleAddOperationToSequence()
-    machine.set_state("case_0")
+    pass
 
 
 def case_3(token):
+
     if isOpenBracket(token):
         machine.set_state('case_4')
     elif isName(token):
-        functions_stack.append(creatInstance("filter", "a == b"))
-        handleAddOperationToSequence()
         machine.set_state("case_6")
     elif isString(token):
         machine.set_state("case_11")
@@ -97,6 +102,7 @@ def case_4(token):
     if isClosingBracket(token):
         if len(projectionParams):
             functions_stack.append(creatInstance("project", projectionParams))
+            functionParamsStack.append(projectionParams)
             handleAddOperationToSequence()
         machine.set_state("case_5")
     elif isString(token):
@@ -139,7 +145,9 @@ def case_9(token):
 def case_10(token):
     global filterValue, filterColumn, filterOp
     if isClosingBracket(token):
-        print(filterColumn, filterOp, filterValue)
+        functions_stack.append(creatInstance("filter", "a == b"))
+        functionParamsStack.append(filterColumn + " " + filterOp + " " + filterValue)
+        handleAddOperationToSequence()
         filterColumn = ""
         filterOp = ""
         filterValue = ""
