@@ -1,16 +1,17 @@
-from .ValueOperation import ValueOperation
-from .SchemaOperation import SchemaOperation
-from .RowOperation import RowOperation
+from .ValueAction import ValueAction
+from .SchemaAction import SchemaAction
+from .RowAction import RowAction
+from metaModel.Condition import Condition
 
 
-def creatInstance(name: str, params: str):
+def creatInstance(name: str, condition: Condition = None):
     schemaOperation = ["project", "dropna"]
     rowOperation = ["sort_values", "filter"]
     if rowOperation.__contains__(name):
-        return RowOperation(name + ": RowOperation", params)
+        return RowAction(name + ": RowAction", condition)
     elif name == "apply":
-        return ValueOperation("format: ValueOperation", params)
+        return ValueAction("format: ValueAction", condition)
     elif schemaOperation.__contains__(name):
-        return SchemaOperation(name + ": SchemaOperation", params)
+        return SchemaAction(name + ": SchemaAction", condition)
     else:
         return None

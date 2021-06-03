@@ -1,10 +1,13 @@
+from functools import reduce
+
 from transitions import Machine
 
 from metaModel.Sequence import Sequence
-from metaModel.oparation.Operation import Operation
+from metaModel.oparation.Action import Action
 from metaModel.oparation.Factory import creatInstance
 from .utils.TokenHelper import isDot, isName, isRightParenthesis, isLeftParenthesis, isOpenBracket, isClosingBracket, \
     isString, isOperator
+from metaModel.Condition import Condition
 
 
 class Interpreter(object):
@@ -30,7 +33,7 @@ machine = Machine(interpreter, states=states,
                   transitions=transitions, initial='case_0')
 
 candidateFunctionName = ""
-functions_stack: list[Operation] = []
+functions_stack: list[Action] = []
 functionParamsStack = []
 projectionParams = []
 sequences: list[Sequence] = [Sequence()]
@@ -42,7 +45,7 @@ filterValue = ""
 def handleAddOperationToSequence():
     params = functionParamsStack.pop()
     function = functions_stack.pop()
-    function.params = params
+    function.condition = params
     if len(sequences[-1].operations):
         if sequences[-1].operations[-1].__class__.__name__ == "SchemaOperation" \
                 and not function.__class__.__name__ == "SchemaOperation":
@@ -54,18 +57,19 @@ def handleAddOperationToSequence():
     else:
         sequences[-1].addOperation(function)
 
+
 def case_0(token):
     global functionParamsStack
+    global candidateFunctionName
     if len(functions_stack):
         if not isLeftParenthesis(token):
             functionParamsStack[-1] += str(token.string)
     if isName(token):
-        global candidateFunctionName
         candidateFunctionName = token.string
     elif isDot(token):
         machine.set_state('case_1')
     elif isLeftParenthesis(token):
-        functions_stack.append(creatInstance(candidateFunctionName, "desc"))
+        functions_stack.append(creatInstance(candidateFunctionName))
         functionParamsStack.append(token.string)
     elif isRightParenthesis(token):
         if functions_stack[-1] is None:
@@ -101,7 +105,9 @@ def case_3(token):
 def case_4(token):
     if isClosingBracket(token):
         if len(projectionParams):
-            functions_stack.append(creatInstance("project", projectionParams))
+            txt = reduce(lambda acc, param:  param + ", " + acc, projectionParams, "")
+            print(txt)
+            functions_stack.append(creatInstance("project", Condition(statement=str)))
             functionParamsStack.append(projectionParams)
             handleAddOperationToSequence()
         machine.set_state("case_5")
@@ -145,7 +151,7 @@ def case_9(token):
 def case_10(token):
     global filterValue, filterColumn, filterOp
     if isClosingBracket(token):
-        functions_stack.append(creatInstance("filter", "a == b"))
+        functions_stack.append(creatInstance("filter", Condition(filterColumn, filterOp, filterValue)))
         functionParamsStack.append(filterColumn + " " + filterOp + " " + filterValue)
         handleAddOperationToSequence()
         filterColumn = ""

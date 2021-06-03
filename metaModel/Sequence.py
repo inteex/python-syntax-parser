@@ -1,5 +1,5 @@
 import uuid
-from metaModel.oparation.Operation import Operation
+from metaModel.oparation.Action import Action
 
 
 class Sequence:
@@ -9,7 +9,7 @@ class Sequence:
         self.operations = []
         self.order = 0
 
-    def addOperation(self, operation: Operation):
+    def addOperation(self, operation: Action):
         self.order += 1
         operation.order = self.order
         self.operations.append(operation)

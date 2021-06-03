@@ -1,4 +1,4 @@
-from metaModel.oparation.Operation import Operation
+from metaModel.oparation.Action import Action
 from metaModel.Sequence import Sequence
 
 default_file = "seq.txt"
@@ -22,21 +22,21 @@ def write(sequences: list[Sequence], path: str = default_file):
     f.write("\n@enduml")
 
 
-def together(operations: list[Operation]):
+def together(operations: list[Action]):
     txt = ""
     for operation in operations:
         txt += "    class \"{}\"\n".format(operation.name)
     return "together {\n" + str(txt) + "}\n\n"
 
 
-def operation2pumlClass(operations: list[Operation]):
+def operation2pumlClass(operations: list[Action]):
     txt = ""
     for operation in operations:
         txt += "class \"" + str(operation.name) + "\"{\n" + operation2properties(operation) + "}\n"
     return txt
 
 
-def operation2properties(operation: Operation):
+def operation2properties(operation: Action):
     txt = ""
     for p, value in vars(operation).items():
         if not p == "name":
@@ -44,7 +44,7 @@ def operation2properties(operation: Operation):
     return txt
 
 
-def package(operations: list[Operation]):
+def package(operations: list[Action]):
     txt = ""
     for operation in operations:
         txt += "    class \"{}\"\n".format(operation.name)
