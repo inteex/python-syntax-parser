@@ -9,6 +9,7 @@ transitions = "*"
 py2puml = "*"
 pyloaders = "*"
 black = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

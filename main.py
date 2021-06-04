@@ -4,22 +4,22 @@ from puml.PumlWriter import write
 import subprocess
 from loaders import SpinningLoader
 from pathlib import Path
+import config
 
-BUILD_DIRECTORY = "build"
-FILE_NAME = "seq.txt"
+BUILD_DIRECTORY = config.build_directory
+FILE_NAME = config.file_name
 Path(BUILD_DIRECTORY).mkdir(parents=True, exist_ok=True)
+path = "/".join([config.build_directory, config.file_name])
 
 loader = SpinningLoader()
 with tokenize.open("./samples/sample2.py") as f:
     tokens = tokenize.generate_tokens(f.readline)
     sequences = parse(tokens)
-    write(sequences, path="{}/seq.txt".format(BUILD_DIRECTORY))
+    write(sequences, path)
     loader.text = "generating class diagram ..."
     loader.start()
     # show loader because it takes some time
-    subprocess.call(
-        ["java", "-jar", "lib/plantuml.jar", "{}/{}".format(BUILD_DIRECTORY, FILE_NAME)]
-    )
+    subprocess.call(["java", "-jar", "lib/plantuml.jar", path])
     loader.complete_text = "Class diagram generated with success!"
     loader.stop()
-    print("PNG file created! at {}/{}".format(BUILD_DIRECTORY, FILE_NAME))
+    print("PNG file created! at {}".format(path))

@@ -1,10 +1,11 @@
 from metaModel.oparation.Action import Action
 from metaModel.Sequence import Sequence
+import config
 
-default_file = "seq.txt"
+default_path = "/".join([config.build_directory, config.file_name])
 
 
-def write(sequences: "list[Sequence]", path: str = default_file):
+def write(sequences: "list[Sequence]", path: str = default_path):
     f = open(path, "w")
     f.write("@startuml\n\n")
     for i, sequence in enumerate(sequences):
