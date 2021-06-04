@@ -4,7 +4,7 @@ from transitions import Machine
 
 from metaModel.Sequence import Sequence
 from metaModel.oparation.Action import Action
-from metaModel.oparation.Factory import creatInstance
+from metaModel.oparation import Factory
 from .utils.TokenHelper import isDot, isName, isRightParenthesis, isLeftParenthesis, isOpenBracket, isClosingBracket, \
     isString, isOperator
 from metaModel.Condition import Condition
@@ -69,9 +69,11 @@ def case_0(token):
     elif isDot(token):
         machine.set_state('case_1')
     elif isLeftParenthesis(token):
-        functions_stack.append(creatInstance(candidateFunctionName))
+        action = Factory.creatInstance(candidateFunctionName)
+        functions_stack.append(action)
         functionParamsStack.append(token.string)
     elif isRightParenthesis(token):
+        # ignore function that are note for data processing
         if functions_stack[-1] is None:
             functions_stack.pop()
             param = functionParamsStack.pop()
@@ -107,7 +109,7 @@ def case_4(token):
         if len(projectionParams):
             txt = reduce(lambda acc, param:  param + ", " + acc, projectionParams, "")
             print(txt)
-            functions_stack.append(creatInstance("project", Condition(statement=str)))
+            functions_stack.append(Factory.creatInstance("project", Condition(statement=str)))
             functionParamsStack.append(projectionParams)
             handleAddOperationToSequence()
         machine.set_state("case_5")
@@ -151,7 +153,7 @@ def case_9(token):
 def case_10(token):
     global filterValue, filterColumn, filterOp
     if isClosingBracket(token):
-        functions_stack.append(creatInstance("filter", Condition(filterColumn, filterOp, filterValue)))
+        functions_stack.append(Factory.creatInstance("filter", Condition(filterColumn, filterOp, filterValue)))
         functionParamsStack.append(filterColumn + " " + filterOp + " " + filterValue)
         handleAddOperationToSequence()
         filterColumn = ""
