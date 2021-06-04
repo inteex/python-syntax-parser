@@ -4,14 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
 transitions = "*"
-py2puml = "*"
 pyloaders = "*"
-black = "*"
 python-dotenv = "*"
 
 [dev-packages]
+black = "*"
 
 [requires]
 python_version = "3.9"
