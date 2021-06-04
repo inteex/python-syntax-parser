@@ -18,19 +18,19 @@ def isDot(token):
 
 
 def isLeftParenthesis(token):
-    return TokenTypes.OP.value == token.type and token.string == '('
+    return TokenTypes.OP.value == token.type and token.string == "("
 
 
 def isRightParenthesis(token):
-    return TokenTypes.OP.value == token.type and token.string == ')'
+    return TokenTypes.OP.value == token.type and token.string == ")"
 
 
 def isOpenBracket(token):
-    return TokenTypes.OP.value == token.type and token.string == '['
+    return TokenTypes.OP.value == token.type and token.string == "["
 
 
 def isClosingBracket(token):
-    return TokenTypes.OP.value == token.type and token.string == ']'
+    return TokenTypes.OP.value == token.type and token.string == "]"
 
 
 def isString(token):

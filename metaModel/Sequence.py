@@ -3,7 +3,6 @@ from metaModel.oparation.Action import Action
 
 
 class Sequence:
-
     def __init__(self):
         self.sequenceId = uuid.uuid4()
         self.operations = []

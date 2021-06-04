@@ -11,4 +11,6 @@ class Action(object):
 
     # to loop over all operation element and call str function
     def __repr__(self):
-        return "{}: {} - {} ({})".format(type(self).__name__, self.name, self.condition, self.order)
+        return "{}: {} - {} ({})".format(
+            type(self).__name__, self.name, self.condition, self.order
+        )

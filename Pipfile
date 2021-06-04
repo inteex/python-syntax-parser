@@ -8,6 +8,7 @@ pandas = "*"
 transitions = "*"
 py2puml = "*"
 pyloaders = "*"
+black = "*"
 
 [dev-packages]
 
