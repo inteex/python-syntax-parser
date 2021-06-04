@@ -12,7 +12,7 @@ Path(BUILD_DIRECTORY).mkdir(parents=True, exist_ok=True)
 path = "/".join([config.build_directory, config.file_name])
 
 loader = SpinningLoader()
-with tokenize.open("./samples/sample2.py") as f:
+with tokenize.open(config.python_file_sample) as f:
     tokens = tokenize.generate_tokens(f.readline)
     sequences = parse(tokens)
     write(sequences, path)
