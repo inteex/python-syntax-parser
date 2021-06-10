@@ -7,7 +7,17 @@ default_path = "/".join([config.build_directory, config.file_name])
 
 def write(sequences: "list[Sequence]", path: str = default_path):
     f = open(path, "w")
-    f.write("@startuml\n\n")
+    f.write('@startuml\
+        \nskinparam classFontColor automatic\
+        \nskinparam classHeaderBackgroundColor #9DCCB8\
+        \nskinparam classBackgroundColor #fff\
+        \nskinparam classBorderColor #99C49B\
+        \nskinparam packageBorderColor #353fb0\
+        \n\n\
+        \nclass "csvFile" #e3cb84{\
+            \n{field} filename "meteo.csv"\
+            \n{field} provider null\
+        \n}\n\n')
     for i, sequence in enumerate(sequences):
         classesTxt = operation2pumlClass(sequence.operations)
         togetherText = together(sequence.operations)
@@ -22,6 +32,7 @@ def write(sequences: "list[Sequence]", path: str = default_path):
             txt = '"{}" --> "{}"\n'.format(tuple2[0], tuple2[1])
             f.write(txt)
         f.write("\n}\n")
+        f.write('"csvFile" --> "sequence ' + str(i + 1) + '"\n')
     f.write("\n@enduml")
 
 

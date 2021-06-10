@@ -61,8 +61,8 @@ def handleAddOperationToSequence():
     function.condition = params
     if len(sequences[-1].operations):
         if (
-            sequences[-1].operations[-1].__class__.__name__ == "SchemaOperation"
-            and not function.__class__.__name__ == "SchemaOperation"
+            sequences[-1].operations[-1].__class__.__name__ == "SchemaAction"
+            and not function.__class__.__name__ == "SchemaAction"
         ):
             sequences.append(Sequence())
             sequences[-1].addOperation(function)
