@@ -5,7 +5,7 @@ from .RowAction import RowAction
 from metaModel.Condition import Condition
 
 
-def creatInstance(name: str, condition: Condition = None) -> Action:
+def creatInstance(name: str, condition: Condition = None, description: str = '""') -> Action:
     """Dynamically create Action sub-class if function is  supported
     by the metamodel, None otherwise
 
@@ -20,10 +20,12 @@ def creatInstance(name: str, condition: Condition = None) -> Action:
     rowOperation = ["sort_values", "filter"]
 
     if rowOperation.__contains__(name):
-        return RowAction(name + ": RowAction", condition)
+        return RowAction(name + ": RowAction", condition, description)
     elif name == "apply":
-        return ValueAction("format: ValueAction", condition)
+        return ValueAction("format: ValueAction", condition, description)
     elif schemaOperation.__contains__(name):
-        return SchemaAction(name + ": SchemaAction", condition)
+        if name == "dropna":
+            description = '"drop NaN values following\n desired axis"'
+        return SchemaAction(name + ": SchemaAction", condition, description)
     else:
         return None
