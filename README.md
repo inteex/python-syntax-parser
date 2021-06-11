@@ -43,12 +43,25 @@ check you build folder ;) !
    
 ## Know issues
 
-If you are using vscode on windows and getting unresolved module you should add somthing like this to .vscode/setting.json
+If you are using vscode and getting unresolved module warnings you should add somthing like this to .vscode/setting.json
 
+linux:
 ```json
-"python.analysis.extraPaths": [
-    "/home/USER_NAME/.local/share/virtualenvs/python-syntax-parser-7wgtT74I/lib/python3.9/site-packages"
-]
+{
+    "python.analysis.extraPaths": [
+        "/home/YOUR_USER_NAME/.local/share/virtualenvs/python-syntax-parser-XXXXXXXX/lib/python3.9/site-packages"
+    ]
+}
+```
+
+Windows:
+```json
+{
+    "python.analysis.extraPaths": [
+        "C:/Users/YOUR_USER_NAME/.virtualenvs/python-syntax-parser-XXXXXXXX/Lib/site-packages"
+    ]
+}
+
 ```
 
 ## The non-quickstart
