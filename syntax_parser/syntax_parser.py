@@ -123,7 +123,7 @@ def case_4(token):
     if TokenHelper.isClosingBracket(token):
         if len(projectionParams):
             txt = reduce(lambda acc, param: param + ", " + acc, projectionParams, "")
-            print(txt)
+            # print(txt)
             functions_stack.append(
                 Factory.creatInstance("project", Condition(statement=str))
             )
@@ -192,18 +192,6 @@ def case_11(token):
         print("error case_11", token.string)
 
 
-def case_12(token):
-    pass
-
-
-def case_13(token):
-    pass
-
-
-def case_14(token):
-    pass
-
-
 switcher = {
     "case_0": case_0,
     "case_1": case_1,
@@ -217,9 +205,6 @@ switcher = {
     "case_9": case_9,
     "case_10": case_10,
     "case_11": case_11,
-    "case_12": case_12,
-    "case_13": case_13,
-    "case_14": case_14,
 }
 
 
