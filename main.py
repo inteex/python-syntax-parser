@@ -1,10 +1,10 @@
 import tokenize
+import subprocess
+from pathlib import Path
+from loaders import SpinningLoader
+import config
 from syntax_parser import parse
 from puml.PumlWriter import write
-import subprocess
-from loaders import SpinningLoader, BarLoader
-from pathlib import Path
-import config
 from loading import withLoader
 
 BUILD_DIRECTORY = config.build_directory

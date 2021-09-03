@@ -1,17 +1,14 @@
-from functools import reduce
-
 from metaModel.Sequence import Sequence
 from metaModel.oparation.Action import Action
 from metaModel.oparation import Factory
-from .utils import TokenHelper
 from metaModel.Condition import Condition
 from syntax_parser.StateMachine import StateMachine
+from .utils import TokenHelper
 
 # The states
 states = [
     "case_0",
     "case_1",
-    "case_2",
     "case_3",
     "case_4",
     "case_5",
@@ -43,7 +40,7 @@ def handleAddOperationToSequence():
     params = functionParamsStack.pop()
     function = functions_stack.pop()
     function.condition = params
-    if len(sequences[-1].operations):
+    if len(sequences[-1].operations) > 0:
         if (
             sequences[-1].operations[-1].__class__.__name__ == "SchemaAction"
             and not function.__class__.__name__ == "SchemaAction"
@@ -58,9 +55,9 @@ def handleAddOperationToSequence():
 
 
 def case_0(token):
-    global functionParamsStack
-    global candidateFunctionName
-    if len(functions_stack):
+    global functionParamsStack  # pylint: disable=global-statement
+    global candidateFunctionName  # pylint: disable=global-statement
+    if len(functions_stack) > 0:
         if not TokenHelper.isLeftParenthesis(token):
             functionParamsStack[-1] += str(token.string)
     if TokenHelper.isName(token):
@@ -76,7 +73,7 @@ def case_0(token):
         if functions_stack[-1] is None:
             functions_stack.pop()
             param = functionParamsStack.pop()
-            if len(functionParamsStack):
+            if len(functionParamsStack) > 0:
                 functionParamsStack[-1] += str(param)
         else:
             handleAddOperationToSequence()
@@ -87,10 +84,6 @@ def case_0(token):
 def case_1(token):
     machine.set_state("case_0")
     switcher.get(machine.currentState)(token)
-
-
-def case_2(token):
-    pass
 
 
 def case_3(token):
@@ -105,9 +98,7 @@ def case_3(token):
 
 def case_4(token):
     if TokenHelper.isClosingBracket(token):
-        if len(projectionParams):
-            txt = reduce(lambda acc, param: param + ", " + acc, projectionParams, "")
-            # print(txt)
+        if len(projectionParams) > 0:
             functions_stack.append(
                 Factory.creatInstance("project", Condition(statement=str))
             )
@@ -132,7 +123,7 @@ def case_6(token):
 
 def case_7(token):
     if TokenHelper.isString(token):
-        global filterColumn
+        global filterColumn  # pylint: disable=global-statement
         filterColumn = token.string
         machine.set_state("case_8")
 
@@ -146,13 +137,13 @@ def case_8(token):
 
 def case_9(token):
     if TokenHelper.isOperator(token):
-        global filterOp
+        global filterOp  # pylint: disable=global-statement
         filterOp = token.string
         machine.set_state("case_10")
 
 
 def case_10(token):
-    global filterValue, filterColumn, filterOp
+    global filterValue, filterColumn, filterOp  # pylint: disable=global-statement
     if TokenHelper.isClosingBracket(token):
         functions_stack.append(
             Factory.creatInstance(
@@ -179,7 +170,6 @@ def case_11(token):
 switcher = {
     "case_0": case_0,
     "case_1": case_1,
-    "case_2": case_2,
     "case_3": case_3,
     "case_4": case_4,
     "case_5": case_5,
