@@ -1,6 +1,6 @@
 [![Version](https://img.shields.io/badge/version-v0.1-orange.svg)](https://github.com/inteex/python-syntax-parser)
 
-A prototype Python syntax parser for the interpretation of the processing on data. 
+A prototype Python syntax parser for the interpretation of the processing on data.
 
 ## Installation
 
@@ -40,7 +40,7 @@ inside your virtual env run:
     python main.py
 
 check you build folder ;) !
-   
+
 ## Know issues
 
 If you are using vscode and getting unresolved module warnings you should add somthing like this to .vscode/setting.json
@@ -67,7 +67,7 @@ Windows:
 ## The non-quickstart
 
 ### Basic initialization
-    # TODO 
+    # TODO
 
 ## Bug ?
 
