@@ -5,7 +5,9 @@ from .RowAction import RowAction
 from metaModel.Condition import Condition
 
 
-def creatInstance(name: str, condition: Condition = None, description: str = '""') -> Action:
+def creatInstance(
+    name: str, condition: Condition = None, description: str = '""'
+) -> Action:
     """Dynamically create Action sub-class if function is  supported
     by the metamodel, None otherwise
 

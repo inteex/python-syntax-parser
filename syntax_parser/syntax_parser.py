@@ -1,25 +1,11 @@
 from functools import reduce
 
-from transitions import Machine
-
 from metaModel.Sequence import Sequence
 from metaModel.oparation.Action import Action
 from metaModel.oparation import Factory
 from .utils import TokenHelper
 from metaModel.Condition import Condition
-
-
-class Interpreter(object):
-    """
-    this is just a skeleton the class will be dynamically filled
-    by Machine constructor (interface like)
-    """
-
-    def __init__(self):
-        self.state = None
-
-
-interpreter = Interpreter()
+from syntax_parser.StateMachine import StateMachine
 
 # The states
 states = [
@@ -40,10 +26,8 @@ states = [
     "case_14",
 ]
 
-# trigger, current State => next State
-transitions = []
 # filling interpreter instance with state and transitions
-machine = Machine(interpreter, states=states, transitions=transitions, initial="case_0")
+machine = StateMachine(states=states, initial="case_0")
 
 candidateFunctionName = ""
 functions_stack: list[Action] = []
@@ -102,7 +86,7 @@ def case_0(token):
 
 def case_1(token):
     machine.set_state("case_0")
-    switcher.get(interpreter.state)(token)
+    switcher.get(machine.currentState)(token)
 
 
 def case_2(token):
@@ -212,7 +196,7 @@ def parse(tokens):
     while True:
         try:
             token = tokens.__next__()
-            switcher.get(interpreter.state, "this state does note exist")(token)
+            switcher.get(machine.currentState, "this state does note exist")(token)
         except StopIteration:
             break
     # print(sequences)

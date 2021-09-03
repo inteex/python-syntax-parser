@@ -18,5 +18,10 @@ with tokenize.open(config.python_file_sample) as f:
     sequences = withLoader("parsing tokens ...", SpinningLoader(), parse, tokens)
     write(sequences, path)
     # show loader because it takes some time
-    withLoader("generating class diagram ...", SpinningLoader(), subprocess.call, ["java", "-jar", "lib/plantuml.jar", path] )
+    withLoader(
+        "generating class diagram ...",
+        SpinningLoader(),
+        subprocess.call,
+        ["java", "-jar", "lib/plantuml.jar", path],
+    )
     print("PNG file created! at {}".format(path))
