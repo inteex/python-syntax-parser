@@ -15,11 +15,11 @@ path = "/".join([config.build_directory, config.file_name])
 
 with tokenize.open(config.python_file_sample) as f:
     tokens = tokenize.generate_tokens(f.readline)
-    sequences = withLoader("parsing tokens ...", SpinningLoader(), parse, tokens)
+    sequences = withLoader("parsing tokens", SpinningLoader(), parse, tokens)
     write(sequences, path)
     # show loader because it takes some time
     withLoader(
-        "generating class diagram ...",
+        "generating class diagram",
         SpinningLoader(),
         subprocess.call,
         ["java", "-jar", "lib/plantuml.jar", path],
