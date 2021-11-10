@@ -2,6 +2,10 @@
 
 A prototype Python syntax parser for the interpretation of the processing on data.
 
+## requirements
+- java >= 8
+- python >= 3.6
+
 ## Installation
 
 installing pipenv
@@ -19,7 +23,7 @@ for help on windows you can follow this [link](https://www.pythontutorial.net/py
 
 ## Quickstart
     pipenv shell
-    (python virtualenv): pipenv install
+    (python virtualenv): pipenv install --dev
 
 ### Filling envirennement variables
 
@@ -43,7 +47,7 @@ check you build folder ;) !
 
 ## Know issues
 
-If you are using vscode and getting unresolved module warnings you should add somthing like this to .vscode/setting.json
+If you are using vscode and getting unresolved module warnings you should add somthing like this to .vscode/settings.json
 
 linux:
 ```json
