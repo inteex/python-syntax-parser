@@ -1,12 +1,13 @@
 from metaModel.Condition import Condition
 
 
-class Action(object):
+class Action:
     order: int
 
     def __init__(self, name, condition: Condition, description: str):
         self.order = 1
-        self.name = name
+        # example 'filter: RowAction'
+        self.name = name + ": " + self.__class__.__name__
         self.condition = condition
         self.description = description
 
