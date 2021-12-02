@@ -1,0 +1,8 @@
+schemaAction:
+  project: select only the columns listed in the condition.
+  dropna: drop NaN values following\n desired axis.
+rowAction:
+  sort_values: sorting the dataset.
+  filter: select rows matching the condition.
+valueAction:
+  apply: format the selected columns.

@@ -1,3 +1,4 @@
+import yaml
 from metaModel.Condition import Condition
 from .Action import Action
 from .ValueAction import ValueAction
@@ -5,9 +6,7 @@ from .SchemaAction import SchemaAction
 from .RowAction import RowAction
 
 
-def creatInstance(
-    name: str, condition: Condition = None, description: str = '""'
-) -> Action or None:
+def creatInstance(name: str, condition: Condition = None) -> Action or None:
     """Dynamically create Action sub-class if function is  supported
     by the metamodel, None otherwise
 
@@ -18,15 +17,18 @@ def creatInstance(
     Returns:
         Action: Action sub-class or None
     """
-    schemaOperation = ["project", "dropna"]
-    rowOperation = ["sort_values", "filter"]
+    schemaAction, rowAction, valueAction = {}, {}, {}
 
-    if rowOperation.__contains__(name):
-        return RowAction(name, condition, description)
-    if name == "apply":
-        return ValueAction("format", condition, description)
-    if schemaOperation.__contains__(name):
-        if name == "dropna":
-            description = '"drop NaN values following\n desired axis"'
-        return SchemaAction(name, condition, description)
+    with open("actions.yaml", encoding="utf-8") as actionsFile:
+        actions = yaml.load(actionsFile, Loader=yaml.FullLoader)
+        schemaAction = actions["schemaAction"]
+        rowAction = actions["rowAction"]
+        valueAction = actions["valueAction"]
+
+    if rowAction.__contains__(name):
+        return RowAction(name, condition, rowAction[name])
+    if valueAction.__contains__(name):
+        return ValueAction(name, condition, valueAction[name])
+    if schemaAction.__contains__(name):
+        return SchemaAction(name, condition, schemaAction[name])
     return None
