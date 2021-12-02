@@ -29,7 +29,7 @@ def write(sequences: list[Sequence], path: str = default_path):
             ]
 
             f.write('package "sequence ' + str(i + 1) + '" {\n')
-            f.write("{}{}".format(classesTxt, togetherText))
+            f.write(str("{}{}".format(classesTxt, togetherText)))
             for tuple2 in tuples2:
                 txt = '"{}" --> "{}"\n'.format(tuple2[0], tuple2[1])
                 f.write(txt)

@@ -22,6 +22,6 @@ with tokenize.open(config.python_file_sample) as f:
         "generating class diagram",
         SpinningLoader(),
         subprocess.call,
-        ["java", "-jar", "lib/plantuml.jar", path],
+        ["java", "-jar", "lib/plantuml.jar", "-charset", "UTF-8", path],
     )
     print("PNG file created! at {}".format(path))
