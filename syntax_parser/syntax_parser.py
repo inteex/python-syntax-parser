@@ -36,22 +36,14 @@ filterOp = ""
 filterValue = ""
 
 
-def handleAddOperationToSequence():
-    params = functionParamsStack.pop()
-    function = functions_stack.pop()
-    function.condition = params
-    if len(sequences[-1].operations) > 0:
-        if (
-            sequences[-1].operations[-1].__class__.__name__ == "SchemaAction"
-            and not function.__class__.__name__ == "SchemaAction"
-        ):
-            sequences.append(Sequence())
-            sequences[-1].addOperation(function)
-        else:
-            sequences[-1].addOperation(function)
-
-    else:
+def handleAddOperationToSequence(isNewSeq=False):
+    if isNewSeq is not True:
+        params = functionParamsStack.pop()
+        function = functions_stack.pop()
+        function.condition = params
         sequences[-1].addOperation(function)
+    else:
+        sequences.append(Sequence())
 
 
 def case_0(token):
@@ -79,6 +71,8 @@ def case_0(token):
             handleAddOperationToSequence()
     elif TokenHelper.isOpenBracket(token):
         machine.set_state("case_3")
+    elif TokenHelper.isNewSequence(token):
+        handleAddOperationToSequence(True)
 
 
 def case_1(token):
